@@ -18,6 +18,6 @@ class SiteStatusesController < ApplicationController
   private
 
   def site_status_params
-    params.require(:site_status).permit(:body)
+    params.require(:site_status).permit(:body, :featured_deal_id)
   end
 end

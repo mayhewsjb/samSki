@@ -17,6 +17,17 @@
       <%= f.label :body, "What's going on in the Alps right now?" %><br>
       <%= f.text_area :body, rows: 8, cols: 80 %>
     </div>
+    <div style="margin-top: 8px;">
+      <%= f.label :featured_deal_id, "Featured deal ID (optional)" %><br>
+      <%= f.number_field :featured_deal_id, size: 10 %>
+      <% if @featured_deal.present? %>
+        <small>
+          Currently:
+          <strong>#<%= @featured_deal.id %></strong> —
+          <%= (@featured_deal.description.presence || @featured_deal.url).truncate(60) %>
+        </small>
+      <% end %>
+    </div>
     <div>
       <%= f.submit "Save status" %>
     </div>
@@ -29,8 +40,31 @@
 
 <hr>
 
+<% if @featured_deal.present? %>
+  <hr>
+  <h2>Best Right Now</h2>
+  <p>
+    <% link_text = @featured_deal.description.presence || @featured_deal.url %>
+    <a href="<%= @featured_deal.url %>" target="_blank" rel="noopener noreferrer">
+      <%= link_text %>
+    </a>
+    <small>
+      (added
+      <%= @featured_deal.created_at.in_time_zone("Europe/London").strftime("%-d %b %Y %H:%M") %>
+      )
+    </small>
+  </p>
+
+  <% if @featured_deal.note.present? %>
+    <p><%= simple_format(@featured_deal.note) %></p>
+  <% end %>
+<% end %>
+
+<hr>
+<hr>
+
 <!-- DEALS SECTION -->
-<h2>Deals</h2>
+<h2>All Deals</h2>
 
 <h3>
   Current deals - as of

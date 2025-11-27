@@ -7,6 +7,8 @@ Rails.application.routes.draw do
     member do
       patch :move_up
       patch :move_down
+      patch :report_broken
+      patch :reset_broken
     end
   end
 

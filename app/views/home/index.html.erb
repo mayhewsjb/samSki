@@ -41,13 +41,14 @@
 <hr>
 
 <% if @featured_deal.present? %>
-  <hr>
-  <h2>Best Right Now</h2>
+  <h2>Featured deal</h2>
+
   <p>
     <% link_text = @featured_deal.description.presence || @featured_deal.url %>
     <a href="<%= @featured_deal.url %>" target="_blank" rel="noopener noreferrer">
       <%= link_text %>
     </a>
+
     <small>
       (added
       <%= @featured_deal.created_at.in_time_zone("Europe/London").strftime("%-d %b %Y %H:%M") %>
@@ -58,7 +59,27 @@
   <% if @featured_deal.note.present? %>
     <p><%= simple_format(@featured_deal.note) %></p>
   <% end %>
+
+  <!-- Broken + reset buttons for featured deal -->
+  <p>
+    <%= button_to "Broken/Outdated?",
+      report_broken_deal_path(@featured_deal),
+      method: :patch,
+      form: { data: { turbo_stream: true }, style: "display:inline; margin-right: 4px;" },
+      data: {
+        turbo_confirm: "Is it really broken? Because it's really annoying if it's not and you're just clicking it anyway."
+      } %>
+
+    <% if authenticated? %>
+      <%= button_to "Reset",
+        reset_broken_deal_path(@featured_deal),
+        method: :patch,
+        form: { data: { turbo_stream: true }, style: "display:inline; margin-left: 4px;" },
+        data: { turbo_confirm: "Reset broken report count for this featured deal?" } %>
+    <% end %>
+  </p>
 <% end %>
+
 
 <hr>
 <hr>
@@ -74,6 +95,26 @@
     never
   <% end %>
 </h3>
+
+<% if authenticated? %>
+    <% broken = Deal.where("broken_reports_count > 0").order(broken_reports_count: :desc) %>
+
+    <% if broken.any? %>
+      <p style="font-size: 1em; color: #ff0000ff; margin-bottom: 8px;">
+        Broken reports on
+        <%=
+          broken.map { |d|
+            # underline the deal ID, superscript the count
+            "#{d.id}<sup>#{d.broken_reports_count}</sup>"
+          }.join(", ").html_safe
+        %>
+      </p>
+    <% else %>
+      <p style="font-size: 0.9em; color: #666; margin-bottom: 8px;">
+        No broken reports.
+      </p>
+    <% end %>
+  <% end %>
 
 <% if authenticated? %>
   <h3>Add a new deal</h3>

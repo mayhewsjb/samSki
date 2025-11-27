@@ -15,6 +15,22 @@
         (updated <%= deal.updated_at.in_time_zone("Europe/London").strftime("%-d %b %Y %H:%M") %>)
       </small>
 
+      <%= button_to "Broken? [#{deal.broken_reports_count}]",
+        report_broken_deal_path(deal),
+        method: :patch,
+        form: { data: { turbo_stream: true }, style: "display:inline; margin-left: 8px;" },
+        data: {
+          turbo_confirm: "Is it really broken? Because it's really annoying if it's not and you're just clicking it anyway."
+        } %>
+      <% if authenticated? %>
+        <%= button_to "Reset",
+          reset_broken_deal_path(deal),
+          method: :patch,
+          form: { data: { turbo_stream: true }, style: "display:inline; margin-left:4px;" },
+          data: { turbo_confirm: "Reset broken report count for this deal?" } %>
+      <% end %>
+
+
       <% if deal.note.present? %>
         <details style="display:inline; margin-left:8px;">
           <summary style="display:inline; cursor:pointer;">

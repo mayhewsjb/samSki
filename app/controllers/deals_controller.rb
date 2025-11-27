@@ -1,4 +1,5 @@
 class DealsController < ApplicationController
+  allow_unauthenticated_access only: [:report_broken]
   # All actions here require authentication (by default via Authentication)
 
   def create
@@ -50,6 +51,27 @@ class DealsController < ApplicationController
       format.html { redirect_to root_path }
     end
   end
+
+  def report_broken
+    @deal = Deal.find(params[:id])
+    @deal.increment!(:broken_reports_count)
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to root_path, notice: "Thanks, noted." }
+    end
+  end
+
+  def reset_broken
+    @deal = Deal.find(params[:id])
+    @deal.update!(broken_reports_count: 0)
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to root_path, notice: "Broken reports reset." }
+    end
+  end
+
 
   # PATCH /deals/reorder  (we’ll hook JS to this later if you want drag & drop)
   def reorder

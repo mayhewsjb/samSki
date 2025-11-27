@@ -1,10 +1,11 @@
 <ul id="deals-list" style="list-style:none; padding-left:0;">
-  <% deals.each do |deal| %>
+  <% deals.each_with_index do |deal, idx| %>
     <li data-id="<%= deal.id %>" style="padding:4px 0; border-bottom:1px solid #ddd;">
       <% if authenticated? %>
+        ID:<%= deal.id %>
         <%= button_to "↑", move_up_deal_path(deal), method: :patch, form: { data: { turbo_stream: true }, style: "display:inline;" } %>
         <%= button_to "↓", move_down_deal_path(deal), method: :patch, form: { data: { turbo_stream: true }, style: "display:inline;" } %>
-        <%= deal.position %>
+        <%= idx + 1 %>
       <% end %>
 
       <% link_text = deal.description.presence || deal.url %>

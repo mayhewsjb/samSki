@@ -29,6 +29,28 @@ class DealsController < ApplicationController
     redirect_to root_path, notice: "Deal removed."
   end
 
+  def move_up
+    @deal = Deal.find(params[:id])
+    above = Deal.where("position < ?", @deal.position).order(position: :desc).first
+    swap_positions(@deal, above) if above
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to root_path }
+    end
+  end
+
+  def move_down
+    @deal = Deal.find(params[:id])
+    below = Deal.where("position > ?", @deal.position).order(position: :asc).first
+    swap_positions(@deal, below) if below
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to root_path }
+    end
+  end
+
   # PATCH /deals/reorder  (we’ll hook JS to this later if you want drag & drop)
   def reorder
     ids = Array(params[:order])
@@ -43,6 +65,13 @@ class DealsController < ApplicationController
   end
 
   private
+
+  def swap_positions(a, b)
+    a_pos = a.position
+    b_pos = b.position
+    a.update!(position: b_pos)
+    b.update!(position: a_pos)
+  end
 
   def deal_params
     params.require(:deal).permit(:url, :description, :note)

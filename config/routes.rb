@@ -4,10 +4,12 @@ Rails.application.routes.draw do
   # Editing bits (all auth-protected by default via Authentication concern)
   resource  :site_status, only: [:update]
   resources :deals, only: [:create, :update, :destroy] do
-    collection do
-      patch :reorder   # we'll hook this up later if/when we do drag & drop
+    member do
+      patch :move_up
+      patch :move_down
     end
   end
+
 
   # These two lines were added by the auth generator already
   resource  :session,   only: [:new, :create, :destroy]

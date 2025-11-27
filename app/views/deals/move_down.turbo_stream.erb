@@ -1,0 +1,3 @@
+<%= turbo_stream.replace "deals-list" do %>
+  <%= render partial: "deals/list", locals: { deals: Deal.order(position: :asc, created_at: :desc) } %>
+<% end %>

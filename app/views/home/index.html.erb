@@ -63,65 +63,8 @@
 <% end %>
 
 <% if @deals.any? %>
-  <ul>
-    <% @deals.each do |deal| %>
-      <li data-deal-id="<%= deal.id %>">
-        <% link_text = deal.description.presence || deal.url %>
-        <a href="<%= deal.url %>" target="_blank" rel="noopener noreferrer">
-          <%= link_text %>
-        </a>
-        <small>
-          (updated
-          <%= deal.updated_at.in_time_zone("Europe/London").strftime("%-d %b %Y %H:%M") %>
-          )
-        </small>
-        <% if deal.note.present? %>
-          <details style="display:inline; margin-left: 8px;">
-            <summary style="display:inline; cursor:pointer; list-style:none;">
-              <span class="triangle">
-                ▸
-              </span>
-              <b>See Note!!</b>
-            </summary>
-            <p style="margin-top:8px;"><%= simple_format(deal.note) %></p>
-          </details>
-        <% end %>
+  <%= render partial: "deals/list", locals: { deals: @deals } %>
 
-
-
-
-
-        <% if authenticated? %>
-          <!-- Simple inline edit for description/url -->
-          <details style="margin-top: 4px;">
-            <summary>Edit</summary>
-            <%= form_with model: deal, url: deal_path(deal), method: :patch do |f| %>
-              <div>
-                <%= f.label :url %><br>
-                <%= f.text_field :url, value: deal.url, size: 60 %>
-              </div>
-              <div>
-                <%= f.label :description, "Link text (optional)" %><br>
-                <%= f.text_field :description, value: deal.description, size: 60 %>
-              </div>
-              <div style="margin-top: 4px;">
-                <%= f.label :note, "Note (optional)" %><br>
-                <%= f.text_area :note, value: deal.note, rows: 4, cols: 60 %>
-              </div>
-              <div>
-                <%= f.submit "Update" %>
-              </div>
-            <% end %>
-
-            <div style="margin-top: 4px;">
-              <%= button_to "Delete", deal_path(deal), method: :delete, data: { turbo_confirm: "Delete this deal?" } %>
-            </div>
-          </details>
-        <% end %>
-      </li>
-      <br>
-    <% end %>
-  </ul>
 
 <% else %>
   <p>No deals yet.</p>

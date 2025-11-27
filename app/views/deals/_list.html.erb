@@ -1,0 +1,56 @@
+<ul id="deals-list" style="list-style:none; padding-left:0;">
+  <% deals.each do |deal| %>
+    <li data-id="<%= deal.id %>" style="padding:4px 0; border-bottom:1px solid #ddd;">
+      <% if authenticated? %>
+        <%= button_to "↑", move_up_deal_path(deal), method: :patch, form: { data: { turbo_stream: true }, style: "display:inline;" } %>
+        <%= button_to "↓", move_down_deal_path(deal), method: :patch, form: { data: { turbo_stream: true }, style: "display:inline;" } %>
+        <%= deal.position %>
+      <% end %>
+
+      <% link_text = deal.description.presence || deal.url %>
+      <a href="<%= deal.url %>" target="_blank"><%= link_text %></a>
+
+      <small>
+        (updated <%= deal.updated_at.in_time_zone("Europe/London").strftime("%-d %b %Y %H:%M") %>)
+      </small>
+
+      <% if deal.note.present? %>
+        <details style="display:inline; margin-left:8px;">
+          <summary style="display:inline; cursor:pointer;">
+            <span class="triangle">▸</span>
+            note
+          </summary>
+          <p style="margin-top:8px;"><%= simple_format(deal.note) %></p>
+        </details>
+      <% end %>
+
+      <% if authenticated? %>
+        <details style="margin-top:4px;">
+          <summary>Edit</summary>
+            <%= form_with model: deal, url: deal_path(deal), method: :patch do |f| %>
+              <div>
+                <%= f.label :url %><br>
+                <%= f.text_field :url, value: deal.url, size: 60 %>
+              </div>
+              <div>
+                <%= f.label :description, "Link text (optional)" %><br>
+                <%= f.text_field :description, value: deal.description, size: 60 %>
+              </div>
+              <div style="margin-top: 4px;">
+                <%= f.label :note, "Note (optional)" %><br>
+                <%= f.text_area :note, value: deal.note, rows: 4, cols: 60 %>
+              </div>
+              <div>
+                <%= f.submit "Update" %>
+              </div>
+            <% end %>
+
+            <div style="margin-top: 4px;">
+              <%= button_to "Delete", deal_path(deal), method: :delete, data: { turbo_confirm: "Delete this deal?" } %>
+            </div>
+          </details>
+        <% end %>
+      </li>
+      <br>
+    <% end %>
+  </ul>

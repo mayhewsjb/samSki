@@ -15,7 +15,7 @@
         (updated <%= deal.updated_at.in_time_zone("Europe/London").strftime("%-d %b %Y %H:%M") %>)
       </small>
 
-      <%= button_to "Broken? [#{deal.broken_reports_count}]",
+      <%= button_to "Broken/Outdated? [#{deal.broken_reports_count}]",
         report_broken_deal_path(deal),
         method: :patch,
         form: { data: { turbo_stream: true }, style: "display:inline; margin-left: 8px;" },
